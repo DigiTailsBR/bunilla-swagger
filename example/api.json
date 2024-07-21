@@ -29,7 +29,7 @@
         }
       }
     },
-    "/users/[id]": {
+    "/users/{id}": {
       "get": {
         "summary": "Get user by id",
         "responses": {

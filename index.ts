@@ -190,18 +190,20 @@ export async function SwaggerGen(router: FileSystemRouter) {
       const cfg = (await import(filePath)).swagger;
       if (cfg) {
         const { paths, schemas } = cfg;
+        // add schemas
         for (const schema in schemas) {
           const element = convertTypeBoxToSwaggerSchema(schemas[schema]);
           swaggerJson.components.schemas[schema] = element;
         }
         if (paths) {
-          // extract paths
-          swaggerJson.paths[path] = paths.json();
+          // add path
+          const pathName = path.replaceAll("[", "{").replaceAll("]", "}");
+          swaggerJson.paths[pathName] = paths.json();
           // extract parameters from path and add them to swagger paths
           const data = extractParameters(path);
           if (data.length) {
-            for (const key in swaggerJson.paths[path]) {
-              const element = swaggerJson.paths[path][key];
+            for (const key in swaggerJson.paths[pathName]) {
+              const element = swaggerJson.paths[pathName][key];
               element.parameters = [];
               data.map((value) => {
                 element.parameters.push({
