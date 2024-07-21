@@ -25,7 +25,7 @@ const swagger = Swagger({
 const json = await swagger.json(router);
 
 console.timeEnd("Swagger");
-
+console.log(router.routes)
 await Bun.write(
   process.cwd() + "/example/api.json",
   JSON.stringify(json, null, 2)
