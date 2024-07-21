@@ -147,7 +147,9 @@
             "type": "string"
           }
         },
-        "required": []
+        "required": [
+          "id"
+        ]
       }
     }
   }

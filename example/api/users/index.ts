@@ -23,6 +23,7 @@ export const swagger = {
         name: { type: "string" },
         email: { type: "string" },
       },
+      required: ["id"],
     },
   },
 };
