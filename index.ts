@@ -182,10 +182,10 @@ export async function SwaggerGen(router: FileSystemRouter) {
     const filePath = router.routes[path];
     const isValid = !path.includes(".test") && !path.includes("/$");
     if (isValid) {
+      // import file and validate swagger
       const cfg = (await import(filePath)).swagger;
       if (cfg) {
         const { paths, schemas } = cfg;
-        // console.log(`Importando Swagger do arquivo ${path}`);
         for (const schema in schemas) {
           const element = convertTypeBoxToSwaggerSchema(schemas[schema]);
           swaggerJson.components.schemas[schema] = element;
@@ -210,16 +210,10 @@ export async function SwaggerGen(router: FileSystemRouter) {
                 });
               });
             }
-            // console.log(data, paths.json());
           }
         }
       }
     }
   }
-
-  await Bun.write(
-    process.cwd() + "/public/api.json",
-    JSON.stringify(swaggerJson, null, 2)
-  );
-  // console.log(swaggerJson);
+  return swaggerJson;
 }
