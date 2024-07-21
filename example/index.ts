@@ -1,6 +1,8 @@
 import { FileSystemRouter } from "bun";
 import Swagger from "..";
 
+console.time("Swagger");
+
 export const router = new FileSystemRouter({
   dir: "./example/api",
   style: "nextjs",
@@ -22,4 +24,9 @@ const swagger = Swagger({
 
 const json = await swagger.json(router);
 
-console.log(json);
+console.timeEnd("Swagger");
+
+await Bun.write(
+  process.cwd() + "/example/api.json",
+  JSON.stringify(json, null, 2)
+);
