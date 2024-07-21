@@ -1,5 +1,7 @@
 # bunilla-swagger
 
+Output example: https://editor.swagger.io/?url=https://raw.githubusercontent.com/DigiTailsBR/bunilla-swagger/main/example/api.json
+
 To install dependencies:
 
 ```bash
