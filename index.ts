@@ -56,7 +56,7 @@ interface SwaggerPathDefinitionUtils {
 export class SwaggerPathDefinition {
   responses: { [key: string]: SwaggerPathDefinitionResponse } = {};
   response(code: number, cfg?: SwaggerPathDefinitionResponse) {
-    this.responses[code] = {};
+    this.responses[code] = { description: "" };
     cfg?.description && (this.responses[code].description = cfg.description);
     cfg?.content && (this.responses[code].content = cfg.content);
   }
