@@ -27,6 +27,10 @@ function extractParameters(str: string) {
   return matches;
 }
 
+function isObjEmpty(obj: { [key: string]: unknown }) {
+  return Object.keys(obj).length === 0;
+}
+
 enum SwaggerResponseContentType {
   json = "application/json",
 }
@@ -130,10 +134,10 @@ export class SwaggerPath {
   }
   json() {
     const data: { [key: string]: unknown } = {};
-    this.#get && (data.get = this.#get);
-    this.#post && (data.post = this.#post);
-    this.#put && (data.put = this.#put);
-    this.#delete && (data.delete = this.#delete);
+    !isObjEmpty(this.#get) && (data.get = this.#get);
+    !isObjEmpty(this.#post) && (data.post = this.#post);
+    !isObjEmpty(this.#put) && (data.put = this.#put);
+    !isObjEmpty(this.#delete) && (data.delete = this.#delete);
     return data;
   }
 }
