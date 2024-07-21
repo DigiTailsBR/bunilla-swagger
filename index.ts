@@ -36,7 +36,7 @@ enum SwaggerResponseContentType {
 }
 
 interface SwaggerPathDefinitionResponse {
-  description?: string;
+  description: string;
   content?: {
     [key in SwaggerResponseContentType]: {
       schema: {

@@ -38,6 +38,7 @@ paths.put("Update user by id", (route, { $ref }) => {
 
 paths.delete("Remove user by id", (route, { $ref }) => {
   route.response(200, {
+    description: "Success",
     content: {
       "application/json": {
         schema: {
