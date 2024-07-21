@@ -1,4 +1,4 @@
-import { router } from "./router";
+import type { FileSystemRouter } from "bun";
 
 function convertTypeBoxToSwaggerSchema(typeboxSchema: any) {
   const { properties, required } = typeboxSchema;
@@ -138,6 +138,22 @@ export class SwaggerPath {
   }
 }
 
+interface SwaggerJson {
+  openapi: "3.0.0";
+  info: {
+    title: string;
+    description?: string;
+    version?: string;
+  };
+  servers: Array<{
+    url: string;
+    description?: string;
+  }>;
+  paths?: any;
+  components?: {
+    schemas: { [key: string]: unknown };
+  };
+}
 const swaggerJson = {
   openapi: "3.0.0",
   info: {
@@ -157,51 +173,53 @@ const swaggerJson = {
   },
 };
 
-export default function Swagger(){
-    
+export default function Swagger(swaggerJson: SwaggerJson) {
+  return { json: SwaggerGen };
 }
 
-for (const path in router.routes) {
-  const filePath = router.routes[path];
-  const isValid = !path.includes(".test") && !path.includes("/$");
-  if (isValid) {
-    const cfg = (await import(filePath)).swagger;
-    if (cfg) {
-      const { paths, schemas } = cfg;
-      // console.log(`Importando Swagger do arquivo ${path}`);
-      for (const schema in schemas) {
-        const element = convertTypeBoxToSwaggerSchema(schemas[schema]);
-        swaggerJson.components.schemas[schema] = element;
-      }
-      if (paths) {
-        // extract paths
-        swaggerJson.paths[path] = paths.json();
-        // extract parameters from path and add them to swagger paths
-        const data = extractParameters(path);
-        if (data.length) {
-          for (const key in swaggerJson.paths[path]) {
-            const element = swaggerJson.paths[path][key];
-            element.parameters = [];
-            data.map((value) => {
-              element.parameters.push({
-                name: value,
-                in: "path",
-                required: true,
-                schema: {
-                  type: "string",
-                },
+export async function SwaggerGen(router: FileSystemRouter) {
+  for (const path in router.routes) {
+    const filePath = router.routes[path];
+    const isValid = !path.includes(".test") && !path.includes("/$");
+    if (isValid) {
+      const cfg = (await import(filePath)).swagger;
+      if (cfg) {
+        const { paths, schemas } = cfg;
+        // console.log(`Importando Swagger do arquivo ${path}`);
+        for (const schema in schemas) {
+          const element = convertTypeBoxToSwaggerSchema(schemas[schema]);
+          swaggerJson.components.schemas[schema] = element;
+        }
+        if (paths) {
+          // extract paths
+          swaggerJson.paths[path] = paths.json();
+          // extract parameters from path and add them to swagger paths
+          const data = extractParameters(path);
+          if (data.length) {
+            for (const key in swaggerJson.paths[path]) {
+              const element = swaggerJson.paths[path][key];
+              element.parameters = [];
+              data.map((value) => {
+                element.parameters.push({
+                  name: value,
+                  in: "path",
+                  required: true,
+                  schema: {
+                    type: "string",
+                  },
+                });
               });
-            });
+            }
+            // console.log(data, paths.json());
           }
-          // console.log(data, paths.json());
         }
       }
     }
   }
-}
 
-await Bun.write(
-  process.cwd() + "/public/api.json",
-  JSON.stringify(swaggerJson, null, 2)
-);
-// console.log(swaggerJson);
+  await Bun.write(
+    process.cwd() + "/public/api.json",
+    JSON.stringify(swaggerJson, null, 2)
+  );
+  // console.log(swaggerJson);
+}
